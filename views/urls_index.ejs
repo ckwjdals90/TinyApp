@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <header>
+    <% include ./partials/_header %>
+  </header>
+  <ul>
+    <% Object.keys(urls).forEach((url) => { %>
+      <li>
+        http://www.tinyapp.com/u/<%= url %>
+        -
+        <a href="<%= urls[url] %>">
+          <%= urls[url] %>
+        </a>
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>
