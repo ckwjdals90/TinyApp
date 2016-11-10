@@ -21,14 +21,15 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
-// //login
-// app.get("/login" (req, res) => {
-//   res.render("/");
-// });
+// //login and logout
 
 app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+})
 
-  res.cookie("username", req.body.username)
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
   res.redirect("/urls");
 })
 
