@@ -15,6 +15,7 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+var users = {};
 
 app.get("/", (req, res) => {
 
@@ -26,12 +27,29 @@ app.get("/", (req, res) => {
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   res.redirect("/urls");
-})
+});
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
-})
+});
+
+// registration
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.post("/register", (req, res) => {
+
+  if (req.body.email === "" || req.body.password === "") {
+    res.status(400).send("Please enter your email and password!");
+  } else if (users[req.body.email]){
+        res.status(400).send("email unavailable");
+  } else {
+  users[generateRandomString()] = req.body;
+  res.redirect("/urls");
+  }
+});
 
 app.get("/urls", (req, res) => {
   let templateVars = { username: req.cookies["username"], urls: urlDatabase };
