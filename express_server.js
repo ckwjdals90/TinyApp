@@ -1,11 +1,13 @@
 "use strict"
 
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(cookieParser())
 
 app.set("view engine", "ejs");
 
@@ -19,13 +21,19 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
-//login
-app.post("/login" (req, res) => {
+// //login
+// app.get("/login" (req, res) => {
+//   res.render("/");
+// });
 
+app.post("/login", (req, res) => {
+
+  res.cookie("username", req.body.username)
+  res.redirect("/urls");
 })
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
