@@ -15,6 +15,7 @@ var urlDatabase = {
 };
 
 app.get("/", (req, res) => {
+
   res.end("Hello!");
 });
 
@@ -27,17 +28,39 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// // Browse through all of the short urls in database
+// app.get("/urls", (req, res) => {
+//   let urls = urlDatabase;
+//   if (req.query.search) {
+//     urls = urls.filter((url) => {
+//       return url.
+//     })
+//   }
+// })
+
+
+
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
+})
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
 app.post("/urls", (req, res) => {
-  // console.log(req.body);
-  // console.log(req.body.longURL);
   let ranNum = generateRandomString()
-  return urlDatabase[ranNum] = req.body.longURL;
-  res.send("OK");
+  urlDatabase[ranNum] = req.body.longURL;
+  // res.end(alert("TADAAAA!/nnew URL has been created :D"));
+  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {

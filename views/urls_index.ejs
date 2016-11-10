@@ -10,11 +10,17 @@
   <ul>
     <% Object.keys(urls).forEach((url) => { %>
       <li>
+        <a href="http://localhost:8080/urls/<%= url %>">
         http://www.tinyapp.com/u/<%= url %>
+        </a>
         -
         <a href="<%= urls[url] %>">
           <%= urls[url] %>
-        </a>
+        </a>&nbsp;
+        <a href="/urls/<%= url %>">Edit</a>
+        <form action="/urls/<%= url %>/delete" method="POST" style="display: inline;">
+          <input type="submit" value="Delete">
+        </form>
       </li>
     <% }); %>
   </ul>
