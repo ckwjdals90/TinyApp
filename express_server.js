@@ -25,12 +25,12 @@ app.get("/", (req, res) => {
 // //login and logout
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("useremail", req.body.useremail);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("useremail");
   res.redirect("/urls");
 });
 
@@ -44,15 +44,17 @@ app.post("/register", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
     res.status(400).send("Please enter your email and password!");
   } else if (users[req.body.email]){
-        res.status(400).send("email unavailable");
+    res.status(400).send("email unavailable");
   } else {
-  users[generateRandomString()] = req.body;
-  res.redirect("/urls");
+    let uniqueID = generateRandomString()
+    users[uniqueID] = req.body;
+    console.log(users);
+    res.redirect("/urls");
   }
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { useremail: req.cookies.useremail, urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
