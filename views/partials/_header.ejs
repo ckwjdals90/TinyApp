@@ -3,11 +3,11 @@
 </div>
 <div>
   <% if (!useremail) { %>
-    <form action="/login" method="POST">
-      <label for="useremail">email</label>
-      <input id="useremail" type="text" name="useremail" placeholder="Please enter your eamil" style="width: 120px"></br>
+    <form action="/login" method="GET">
       <input type="submit" value="Sign in">
-      <a href="/register">Register</a>
+    </form>&nbsp;
+    <form action="/register" method="GET">
+      <input type="submit" value="Register">
     </form>
   <% } else { %>
     <%= useremail %>
