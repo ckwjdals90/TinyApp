@@ -7,6 +7,15 @@
   <header>
     <% include ./partials/_header %>
   </header>
+  </br>
+  </br>
+  <div>
+    <% if (useremail) { %>
+    <form action="/urls/new" method="GET">
+      <input type="submit" value="Creat">
+    </form>
+    <% } %>
+  </div>
   <ul>
     <% Object.keys(urls).forEach((url) => { %>
       <li>
