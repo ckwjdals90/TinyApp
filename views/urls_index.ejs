@@ -18,20 +18,21 @@
   </div>
   <ul>
     <% Object.keys(urls).forEach((url) => { %>
+      <% if (urls[url].creator === useremail) {%>
       <li>
         <a href="http://localhost:8080/urls/<%= url %>">
         http://www.tinyapp.com/u/<%= url %>
         </a>
         -
-        <a href="<%= urls[url] %>">
-          <%= urls[url] %>
+        <a href="<%= urls[url].longURL %>">
+          <%= urls[url].longURL %>
         </a>&nbsp;
         <a href="/urls/<%= url %>">Edit</a>
         <form action="/urls/<%= url %>/delete" method="POST" style="display: inline;">
           <input type="submit" value="Delete">
         </form>
       </li>
-    <% }); %>
+    <% }}); %>
   </ul>
 </body>
 </html>

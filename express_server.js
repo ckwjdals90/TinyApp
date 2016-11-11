@@ -23,13 +23,18 @@ app.use(cookieSession({
 app.set("view engine", "ejs");
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { creator: 'asdf@asdf.asdf', longURL: "http://www.lighthouselabs.ca"},
+  "9sm5xK": { creator: 'asdf@asdf.asdf', longURL: "http://www.google.com"},
 };
-var users = {};
+var users = {
+  '27wuxa':
+   { email: 'asdf@asdf.asdf',
+     password: '$2a$10$RPL/qnx9TWSry0bxUbv84O6TG1H8FpWyOeYrQehwl7aOcYLZW7Fta' }
+  };
 
 app.get("/", (req, res) => {
-
+  let templateVars = { useremail: req.session.useremail, urls: urlDatabase };
+  res.render("homepage", templateVars);
   res.end("Hello!");
 });
 
@@ -76,7 +81,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session.useremail = undefined;
-  res.redirect("/urls");
+  res.redirect("/");
 });
 
 // registration
@@ -124,26 +129,16 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// // Browse through all of the short urls in database
-// app.get("/urls", (req, res) => {
-//   let urls = urlDatabase;
-//   if (req.query.search) {
-//     urls = urls.filter((url) => {
-//       return url.
-//     })
-//   }
-// })
-
-
-
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+  let templateVars = { useremail: req.session.useremail, urls: urlDatabase, para: req.params.id };
+    // console.log(templateVars.urls[para].creator)
+    // console.log(useremail)
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect("/urls");
 })
 
@@ -153,10 +148,10 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // let
+  let useremail = req.session.useremail
   let ranNum = generateRandomString()
-  urlDatabase[ranNum] = req.body.longURL;
-
+  urlDatabase[ranNum] = {creator: useremail, longURL: req.body.longURL};
+  console.log(urlDatabase);
   console.log("TADAAAA!/nnew URL has been created :D");
   res.redirect("/urls");
 });
