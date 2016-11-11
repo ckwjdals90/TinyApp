@@ -120,7 +120,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+    let templateVars = { useremail: req.session.useremail, urls: urlDatabase };
+  res.render("urls_new", templateVars);
 });
 
 // // Browse through all of the short urls in database
@@ -152,9 +153,11 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  // let
   let ranNum = generateRandomString()
   urlDatabase[ranNum] = req.body.longURL;
-  // res.end(alert("TADAAAA!/nnew URL has been created :D"));
+
+  console.log("TADAAAA!/nnew URL has been created :D");
   res.redirect("/urls");
 });
 
