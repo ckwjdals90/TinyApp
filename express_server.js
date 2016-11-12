@@ -13,12 +13,18 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
-
 app.set('trust proxy', 1) // trust first proxy
 app.use(cookieSession({
   name: 'session',
   keys: ['secretkey1', 'secretkey2']
 }))
+app.use((req, res, next) => {
+  res.locals.useremail = users[req.session.userSessId] ? req.session.useremail : null;
+  res.locals.urls = urlDatabase;
+  next();
+});
+
+// const templateVars = { useremail: req.session.useremail, urls: urlDatabase };
 
 app.set("view engine", "ejs");
 
@@ -33,9 +39,8 @@ var users = {
   };
 
 app.get("/", (req, res) => {
-  let templateVars = { useremail: req.session.useremail, urls: urlDatabase };
-  res.render("homepage", templateVars);
-  res.end("Hello!");
+
+  res.render("homepage");
 });
 
 // //login and logout
@@ -49,25 +54,25 @@ app.post("/login", (req, res) => {
 
   var emailFound = "";
   var passwordFound = "";
+  var userUniqId = "";
   Object.keys(users).forEach((userId) => {
     if (users[userId].email === emailInput) {
       emailFound = users[userId].email;
       passwordFound = users[userId].password;
+      userUniqId = userId;
     }
   });
 
   if (emailInput === emailFound) {
     console.log("email found in the db");
-    // var passwordMatch;
     bcrypt.compare(passwordInput, passwordFound, (err, passwordMatch) => {
       if (passwordMatch) {
-      console.log("password matches, good to go");
-      req.session.useremail = req.body.useremail;
+      req.session.userSessId = userUniqId;
+      req.session.useremail = req.body.useremail
       res.redirect("/urls");
       return;
     } else {
       console.log("wrong password");
-      // res.send("Invalid email or password");
       res.status(403).send("Invalid email or password");
       return;
     }
@@ -81,6 +86,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session.useremail = undefined;
+  req.session.userSessId = undefined;
   res.redirect("/");
 });
 
@@ -120,39 +126,41 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { useremail: req.session.useremail, urls: urlDatabase };
-  res.render("urls_index", templateVars);
-});
+// const templateVars = { useremail: req.session.useremail, urls: urlDatabase };
 
-app.get("/urls/new", (req, res) => {
-    let templateVars = { useremail: req.session.useremail, urls: urlDatabase };
-  res.render("urls_new", templateVars);
-});
-
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { useremail: req.session.useremail, urls: urlDatabase, para: req.params.id };
-    // console.log(templateVars.urls[para].creator)
-    // console.log(useremail)
-  res.render("urls_show", templateVars);
-});
-
-app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.longURL;
-  res.redirect("/urls");
-})
-
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  res.render("urls_index");
 });
 
 app.post("/urls", (req, res) => {
   let useremail = req.session.useremail
   let ranNum = generateRandomString()
-  urlDatabase[ranNum] = {creator: useremail, longURL: req.body.longURL};
+  let newLongURL = req.body.longURL.includes('http://' || 'https://') ? req.body.longURL : ("https://" + req.body.longURL)
+  urlDatabase[ranNum] = { creator: useremail, longURL: newLongURL };
   console.log(urlDatabase);
   console.log("TADAAAA!/nnew URL has been created :D");
+  res.redirect("/urls");
+});
+
+app.get("/urls/new", (req, res) => {
+// const templateVars = { useremail: req.session.useremail, urls: urlDatabase };
+  res.render("urls_new");
+});
+
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { para: req.params.id }
+// templateVars = { useremail: req.session.useremail, urls: urlDatabase, para: req.body.id }
+
+  res.render("urls_show", templateVars);
+});
+
+app.post("/urls/:id", (req, res) => {
+  let newLongURL = req.body.longURL.includes('http://' || 'https://') ? req.body.longURL : ("https://" + req.body.longURL)
+  urlDatabase[req.params.id].longURL = newLongURL;
+  res.redirect("/urls");
+})
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
@@ -176,5 +184,20 @@ app.listen(PORT, () => {
 function generateRandomString() {
 return Math.floor(1 + Math.random() * Number.MAX_VALUE).toString(36).substring(1, 7);
 }
+
+
+
+
+
+
+
+
+//res.locals
+
+
+
+
+
+
 
 
