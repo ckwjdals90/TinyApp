@@ -65,16 +65,16 @@ app.post("/login", (req, res) => {
     console.log("email found in the db");
     bcrypt.compare(passwordInput, passwordFound, (err, passwordMatch) => {
       if (passwordMatch) {
-      req.session.userSessId = userUniqId;
-      req.session.useremail = req.body.useremail
-      res.redirect("/urls");
-      return;
-    } else {
-      console.log("wrong password");
-      res.status(403).send("Invalid email or password");
-      return;
-    }
-  });
+        req.session.userSessId = userUniqId;
+        req.session.useremail = req.body.useremail
+        res.redirect("/urls");
+        return;
+      } else {
+        console.log("wrong password");
+        res.status(403).send("Invalid email or password");
+        return;
+      }
+    });
   } else {
     console.log("email not found");
     res.status(403).send("Invalid email or password");
@@ -117,7 +117,6 @@ app.post("/register", (req, res) => {
       users[uniqueID] = newUser;
       console.log(users);
     });
-
     res.redirect("/urls");
   }
 });
@@ -142,12 +141,11 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { para: req.params.id }
-
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
-  let newLongURL = req.body.longURL.includes('http://' || 'https://') ? req.body.longURL : ("https://" + req.body.longURL)
+  let newLongURL = req.body.longURL.includes('http://' || 'https://') ? req.body.longURL : ("https://" + req.body.longURL);
   urlDatabase[req.params.id].longURL = newLongURL;
   res.redirect("/urls");
 })
@@ -158,7 +156,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
+  let longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 })
 
@@ -176,5 +174,5 @@ app.listen(PORT, () => {
 
 
 function generateRandomString() {
-return Math.floor(1 + Math.random() * Number.MAX_VALUE).toString(36).substring(1, 7);
+  return Math.floor(1 + Math.random() * Number.MAX_VALUE).toString(36).substring(1, 7);
 }
