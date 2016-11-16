@@ -8,15 +8,15 @@
     <% include ./partials/_header %>
   </header>
   <ul>
-    <% if (!urls[para]) { %>
+    <% if (!urls[paramId]) { %>
       <p>The requested URL does not exist.</br>Please check the URL entered.</p>
       <p>Please click <a href="/urls">here</a> to go back to the main page.</p>
     <% } else { %>
-      <% if (urls[para].creator === useremail) { %>
+      <% if (urls[paramId].creator === useremail) { %>
         <li>
-          <%= para %> - <%= urls[para].longURL %>
+          <%= paramId %> - <%= urls[paramId].longURL %>
         </li>
-        <form action="/urls/<%= para %>" method="POST" style="margin:150px;">
+        <form action="/urls/<%= paramId %>" method="POST" style="margin:150px;">
           <label for="longURL">Enter new URL to update:</label>
           <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
           <input type="submit" value="Submit">

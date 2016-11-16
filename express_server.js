@@ -71,13 +71,13 @@ app.post("/login", (req, res) => {
         return;
       } else {
         console.log("wrong password");
-        res.status(403).send("Invalid email or password");
+        res.status(401).send("Invalid email or password");
         return;
       }
     });
   } else {
     console.log("email not found");
-    res.status(403).send("Invalid email or password");
+    res.status(401).send("Invalid email or password");
     return;
   }
 });
@@ -140,7 +140,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { para: req.params.id }
+  const templateVars = { paramId: req.params.id }
   res.render("urls_show", templateVars);
 });
 
@@ -164,14 +164,10 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 })
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
 
 function generateRandomString() {
   return Math.floor(1 + Math.random() * Number.MAX_VALUE).toString(36).substring(1, 7);
