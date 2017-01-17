@@ -7,8 +7,6 @@ const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 
 const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 
@@ -140,17 +138,35 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  if (!req.session.useremail) {
+    return res.redirect('/login');
+  }
   const templateVars = { paramId: req.params.id }
+  if(urlDatabase[req.params.id] == undefined) {
+    res.status(404);
+  }
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
+  if (!req.session.useremail) {
+    return res.redirect('/login');
+  }
+  if (req.session.useremail !== urlDatabase[req.params.id].creator) {
+    return res.status(403).send("FORBIDDEN: URL does not belong to you.");
+  }
   let newLongURL = req.body.longURL.includes('http://' || 'https://') ? req.body.longURL : ("https://" + req.body.longURL);
   urlDatabase[req.params.id].longURL = newLongURL;
   res.redirect("/urls");
 })
 
 app.post("/urls/:id/delete", (req, res) => {
+  if (!req.session.useremail) {
+    return res.redirect('/login');
+  }
+  if (req.session.useremail !== urlDatabase[req.params.id].creator) {
+    return res.status(403).send("FORBIDDEN: URL does not belong to you.");
+  }
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
